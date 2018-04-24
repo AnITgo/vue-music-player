@@ -5,12 +5,15 @@
       </slot>
     </div>
     <div class="dots">
+      <span class="dot" v-for="item in dots" :key="item.index"></span>
     </div>
   </div>
 </template>
 <script type="text/ecmascript-6">
   import {addClass} from 'common/js/dom'
+  import BScroll from 'better-scroll'
   export default{
+    name: 'slider',
     props: {
       loop: {
         type: Boolean,
@@ -25,9 +28,16 @@
         default: 4000
       }
     },
+    data() {
+      return {
+        dots: [],
+        currentPageIndex: 0
+      }
+    },
     mounted() {
       setTimeout(() => {
         this._setSliderWidth()
+        this._initDots()
         this._initSlider()
       }, 20)
     },
@@ -35,7 +45,7 @@
       _setSliderWidth() {
         this.children = this.$refs.sliderGroup.children
         let width = 0
-        let sliderWidth = this.$refs.clientWidth
+        let sliderWidth = this.$refs.slider.clientWidth
         for (let i = 0; i < this.children.length; i++) {
           let child = this.children[i]
           addClass(child, 'slider-item')
@@ -50,7 +60,26 @@
         this.$refs.sliderGroup.style.width = width + 'px'
       },
       _initSlider() {
-
+        this.slider = new BScroll(this.$refs.slider, {
+          scrollX: true,
+          scrollY: false,
+          monentum: false,
+          snap: true,
+          snapLoop: this.loop,
+          snapThreshold: 0.3,
+          snapSpeed: 400,
+          click: true
+        })
+        this.slider.on('scrollEnd', () => {
+          let pageIndex = this.slider.getCurrentPage().pageX
+          if (this.loop) {
+            pageIndex -= 1
+          }
+          this.currentPageIndex = pageIndex
+        })
+      },
+      _initDots() {
+        this.dots = new Array(this.children.length)
       }
     }
   }
