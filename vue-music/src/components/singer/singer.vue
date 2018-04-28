@@ -21,9 +21,6 @@
     created() {
       this._getSingerList()
     },
-    components: {
-      ListView
-    },
     methods: {
       _getSingerList() {
         getSingerList().then((res) => {
@@ -74,6 +71,9 @@
         })
         return hot.concat(ret)
       }
+    },
+    components: {
+      ListView
     }
   }
 
